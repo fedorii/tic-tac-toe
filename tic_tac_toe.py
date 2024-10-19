@@ -10,8 +10,11 @@ def update_board(board, move, char):
     if 1 <= move <= 9:
         row = int(cells[str(move)].split()[0])
         col = int(cells[str(move)].split()[1])
-        board[row][col] = char
-        return board
+        if board[row][col] == ' ':
+            board[row][col] = char
+            return board    
+        else:
+            raise ValueError
     else:
         ...
 
@@ -50,29 +53,33 @@ def display_board(board):
     print(board)
 
 
-if __name__ == "__main__":
+board_cells = [
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
+    [' ', ' ', ' ']
+]
+winner = False
+char = "O" # You can replace to "X" if want to start with it
 
-    board_cells = [
-        [' ', ' ', ' '],
-        [' ', ' ', ' '],
-        [' ', ' ', ' ']
-    ]
-    winner = False
-    char = "O" # You can replace to "X" if want to start with it
-
-    while winner == 0:
+while not winner:
+    try:
+        player_move = int(input(f"{char}, your turn: "))
+        char = "X" if char == "O" else "O"
         try:
-            char = "X" if char == "O" else "O"
-            player_move = int(input(f"{char}, your turn: "))
-            board_cells = update_board(board=board_cells, move=player_move, char=char)
-            display_board(board=board_cells)
-            winner = check_win(b=board_cells)
+            try:
+                board_cells = update_board(board_cells, player_move, char)
+            except ValueError:
+                print('This cell is already filled, choose another')
+                char = "X" if char == "O" else "O"
+        except ValueError:
+            print('Choose cell from numpad')
+        display_board(board_cells)
+        winner = check_win(board_cells)
+    except KeyboardInterrupt:
+        print("You stopped the game")
+        break
 
-        except KeyboardInterrupt:
-            print("You stopped the game")
-            break
-
-    if winner == 2:
-        print("Draw!")
-    elif winner == 1:
-        print(char, " wins!")
+if winner == 2:
+    print("Draw!")
+elif winner == 1:
+    print(char, " wins!")
