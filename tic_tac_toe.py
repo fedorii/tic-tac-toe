@@ -16,7 +16,7 @@ def update_board(board, move, char):
         else:
             raise ValueError
     else:
-        ...
+        raise KeyError
 
 def check_win(b):
     if b[0][0] == b[0][1] == b[0][2] and b[0][0] != ' ' or\
@@ -52,6 +52,12 @@ def display_board(board):
     '''
     print(board)
 
+def display_result(winner):
+    if winner == 2:
+        print("Draw!")
+    elif winner == 1:
+        print(char, " wins!")
+
 
 board_cells = [
     [' ', ' ', ' '],
@@ -63,23 +69,26 @@ char = "O" # You can replace to "X" if want to start with it
 
 while not winner:
     try:
-        player_move = int(input(f"{char}, your turn: "))
         char = "X" if char == "O" else "O"
+        player_move = int(input(f"{char}, your turn: "))
         try:
             try:
                 board_cells = update_board(board_cells, player_move, char)
+                winner = check_win(board_cells)
             except ValueError:
-                print('This cell is already filled, choose another')
+                print('\nThis cell is already filled, choose another\n')
+                char = "X" if char == "O" else "O"
+            except KeyError:
+                print('\nChoose a number from 1 to 9\n')
                 char = "X" if char == "O" else "O"
         except ValueError:
-            print('Choose cell from numpad')
-        display_board(board_cells)
-        winner = check_win(board_cells)
+            print('\nChoose cell from numpad\n')
+    except ValueError:
+        print('\nChoose cell from numpad\n')
+        char = "X" if char == "O" else "O"
     except KeyboardInterrupt:
-        print("You stopped the game")
+        print("\nYou stopped the game\n")
         break
+    display_board(board_cells)
 
-if winner == 2:
-    print("Draw!")
-elif winner == 1:
-    print(char, " wins!")
+display_result(winner)
